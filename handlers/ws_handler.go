@@ -69,7 +69,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 		log.Println("FROM:", connection.RemoteAddr(), "MESSAGE:", string(message))
 
 		// Отправка ответа клиенту
-		connection.WriteMessage(websocket.TextMessage, message)
+		// connection.WriteMessage(websocket.TextMessage, message)
 
 		go messageHandler(message)
 	}
