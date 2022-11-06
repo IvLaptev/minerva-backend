@@ -1,7 +1,8 @@
-package types
+package utils
 
 import (
-	"log"
+	"fmt"
+	"minerva/types"
 	"os"
 
 	"gopkg.in/yaml.v2"
@@ -9,10 +10,12 @@ import (
 
 type Configuration struct {
 	Service struct {
+		Host   string   `yaml:"host"`
 		Port   string   `yaml:"port"`
 		Master bool     `yaml:"master"`
 		Slaves []string `yaml:"slaves"`
 	} `yaml:"service"`
+	Actions []types.Action `yaml:"actions"`
 }
 
 var Config Configuration
@@ -31,7 +34,8 @@ func ReadConfig() error {
 		return err
 	}
 
-	log.Println(Config)
+	Config.Service.Host = Config.Service.Host + ":" + Config.Service.Port
+	fmt.Println(Config)
 
 	return nil
 }

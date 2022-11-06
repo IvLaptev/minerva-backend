@@ -27,18 +27,35 @@ On each of the on-board computers of the robot, you must run its own instance of
 
     ```yml
     service:
+      host: '127.0.0.1'
       port: '8080'
       master: true
       slaves:
-        - 127.0.0.0:8081
-        - 127.0.0.0:8082
+        - http://127.0.0.1:8080
+        - http://127.0.0.1:8082
+
+    actions:
+      - id: '8080_1'
+        title: 'First'
+        description: 'Test back'
+      - id: '8080_2'
+        title: 'Second'
+        description: 'Test back'
     ```
 
     Or you can configure instance as a slave:
     ```yml
     service:
+      host: '127.0.0.1'
       port: '8080'
-      master: false
+
+    actions:
+      - id: '8080_1'
+        title: 'First'
+        description: 'Test back'
+      - id: '8080_2'
+        title: 'Second'
+        description: 'Test back'
     ```
 
 5. Run service

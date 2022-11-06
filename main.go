@@ -3,21 +3,26 @@ package main
 import (
 	"fmt"
 	"minerva/handlers"
-	"minerva/types"
+	"minerva/utils"
 	"net/http"
 )
 
 func main() {
-	err := types.ReadConfig()
+	err := utils.ReadConfig()
 	if err != nil {
 		fmt.Println("Can't read configuration file")
 		fmt.Println(err)
 	}
 
-	config := types.GetConfig()
+	config := utils.GetConfig()
 
-	// Обработка подключения, для управления системой
+	if config.Service.Master {
+		go utils.SetupSlaves(config.Service.Slaves, config.Service.Host)
+	}
+
+	// Обработка подключений, для управления системой
 	http.HandleFunc("/control", handlers.WsController)
+	http.HandleFunc("/master", handlers.HandleMaster)
 
 	// Запуск сервера
 	http.ListenAndServe(":"+config.Service.Port, nil)
