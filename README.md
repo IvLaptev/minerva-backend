@@ -21,7 +21,26 @@ On each of the on-board computers of the robot, you must run its own instance of
     go get .
     ```
 
-4. Configure service (TODO)
+4. Configure service
+
+    Create cofiguration for master instance (with `master` setted to `true`):
+
+    ```yml
+    service:
+      port: '8080'
+      master: true
+      slaves:
+        - 127.0.0.0:8081
+        - 127.0.0.0:8082
+    ```
+
+    Or you can configure instance as a slave:
+    ```yml
+    service:
+      port: '8080'
+      master: false
+    ```
+
 5. Run service
 
     ```bash
