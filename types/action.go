@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -8,6 +9,7 @@ type Action struct {
 	Title       string
 	Description string
 	Id          string
+	Connection  *websocket.Conn
 }
 
 func GetActions(data []interface{}) ([]Action, error) {

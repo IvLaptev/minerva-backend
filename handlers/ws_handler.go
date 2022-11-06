@@ -23,7 +23,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func WsController(w http.ResponseWriter, r *http.Request) {
+func WsMasterController(w http.ResponseWriter, r *http.Request) {
 	connection, _ := upgrader.Upgrade(w, r, nil)
 	defer connection.Close()
 	log.Println("CONNECTED:", connection.RemoteAddr())
@@ -56,6 +56,7 @@ func WsController(w http.ResponseWriter, r *http.Request) {
 			}
 
 			for i := 0; i < len(new_actions); i++ {
+				new_actions[i].Connection = connection
 				actions[new_actions[i].Id] = new_actions[i]
 				defer delete(actions, new_actions[i].Id)
 			}

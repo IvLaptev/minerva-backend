@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Обработка подключений, для управления системой
-	http.HandleFunc("/control", handlers.WsController)
+	http.HandleFunc("/control", handlers.WsMasterController)
 	http.HandleFunc("/master", handlers.HandleMaster)
 
 	// Запуск сервера
