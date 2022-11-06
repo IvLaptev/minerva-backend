@@ -7,7 +7,6 @@ import (
 	"minerva/utils"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
@@ -25,15 +24,12 @@ func HandleMaster(w http.ResponseWriter, r *http.Request) {
 	}
 	defer connection.Close()
 
+	// Отправка возможных для выполнения задач
 	actions := make([]interface{}, 0)
 	mapstructure.Decode(utils.GetConfig().Actions, &actions)
-
 	msg, _ := json.Marshal(types.Message{Command: "set_actions", Body: actions})
-
 	connection.WriteMessage(websocket.TextMessage, msg)
 
 	// Сохранение соединения между сервисами
-	for {
-		time.Sleep(1 * time.Minute)
-	}
+	WsSlaveHandler(connection)
 }

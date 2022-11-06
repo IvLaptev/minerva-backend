@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"minerva/types"
 	"net/http"
@@ -24,6 +23,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func WsMasterController(w http.ResponseWriter, r *http.Request) {
+	// Установка соединения
 	connection, _ := upgrader.Upgrade(w, r, nil)
 	defer connection.Close()
 	log.Println("CONNECTED:", connection.RemoteAddr())
@@ -31,7 +31,11 @@ func WsMasterController(w http.ResponseWriter, r *http.Request) {
 	clients[connection] = true
 	defer delete(clients, connection)
 
-	// Обработка сообщений конкретного соединения
+	// Обработка сообщений соединения
+	WsSlaveHandler(connection)
+}
+
+func WsSlaveHandler(connection *websocket.Conn) {
 	for {
 		mt, message, err := connection.ReadMessage()
 
@@ -63,7 +67,6 @@ func WsMasterController(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Println("FROM:", connection.RemoteAddr(), "MESSAGE:", string(message))
-		fmt.Println(actions)
 
 		// Отправка ответа клиенту
 		connection.WriteMessage(websocket.TextMessage, message)
