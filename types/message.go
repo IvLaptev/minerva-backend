@@ -18,7 +18,7 @@ func GetMessageFromBytes(message []byte) (Message, error) {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		if msg.Command == COMMANDS[0] || msg.Command == COMMANDS[1] || msg.Command != COMMANDS[2] {
+		if msg.Command == COMMANDS[0] || msg.Command == COMMANDS[1] || msg.Command == COMMANDS[2] {
 			return msg, nil
 		} else {
 			err = errors.New("wrong command name")

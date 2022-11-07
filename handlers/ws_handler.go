@@ -28,6 +28,7 @@ func SetDefaultActions(new_actions []types.Action) {
 	for _, action := range new_actions {
 		if actions[action.Id].Id != "" {
 			log.Println("ERROR: Action with ID", action.Id, "already exists")
+			continue
 		}
 
 		actions[action.Id] = action
@@ -76,6 +77,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			for i := 0; i < len(new_actions); i++ {
 				if actions[new_actions[i].Id].Id != "" {
 					log.Println("ERROR: Action with ID", new_actions[i].Id, "already exists")
+					continue
 				}
 
 				new_actions[i].Connection = connection
@@ -95,7 +97,16 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				resp, _ := json.Marshal(resp_actions)
 
 				connection.WriteMessage(websocket.TextMessage, resp)
+			}
 
+		case types.COMMANDS[2]: // run_action
+			action_id := msg.Body[0].(string)
+
+			action := actions[action_id]
+			if action.Connection != nil {
+				action.Connection.WriteMessage(websocket.TextMessage, message)
+			} else {
+				log.Println("INVOKE ACTION")
 			}
 		}
 

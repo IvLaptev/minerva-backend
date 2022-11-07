@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"minerva/types"
 	"os"
 
@@ -36,7 +35,6 @@ func ReadConfig() error {
 	}
 
 	Config.Service.Host = Config.Service.Host + ":" + Config.Service.Port
-	fmt.Println(Config)
 
 	return nil
 }
