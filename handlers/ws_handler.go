@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"log"
 	"minerva/types"
 	"net/http"
@@ -44,6 +45,8 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			break // Выходим из цикла, если клиент пытается закрыть соединение или связь с клиентом прервана
 		}
 
+		log.Println("FROM:", connection.RemoteAddr(), "MESSAGE:", string(message))
+
 		// Обработка сообщения
 		var msg types.Message
 		msg, err = types.GetMessageFromBytes(message)
@@ -60,13 +63,30 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			}
 
 			for i := 0; i < len(new_actions); i++ {
+				if actions[new_actions[i].Id].Id != "" {
+					log.Println("ERROR: Action with ID", new_actions[i].Id, "already exists")
+				}
+
 				new_actions[i].Connection = connection
 				actions[new_actions[i].Id] = new_actions[i]
 				defer delete(actions, new_actions[i].Id)
 			}
-		}
 
-		log.Println("FROM:", connection.RemoteAddr(), "MESSAGE:", string(message))
+		case types.COMMANDS[1]: // get_actions
+			var resp_actions = make([]types.ResponceAction, 0)
+			for _, action := range actions {
+				resp_actions = append(resp_actions, types.ResponceAction{
+					Id:          action.Id,
+					Title:       action.Title,
+					Description: action.Description,
+				})
+
+				resp, _ := json.Marshal(resp_actions)
+
+				connection.WriteMessage(websocket.TextMessage, resp)
+
+			}
+		}
 
 		// Отправка ответа клиенту
 		// connection.WriteMessage(websocket.TextMessage, message)

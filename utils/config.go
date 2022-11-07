@@ -20,6 +20,7 @@ type Configuration struct {
 
 var Config Configuration
 
+// Чтение файла конфигурации
 func ReadConfig() error {
 	f, err := os.Open("config.yaml")
 	if err != nil {

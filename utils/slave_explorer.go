@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -21,7 +20,7 @@ func find_save(addr string, master string) {
 		if err == nil && strings.Split(r.Status, " ")[0] == "200" {
 			break
 		} else {
-			log.Println("ERROR: Can't connect to", addr)
+			// log.Println("ERROR: Can't connect to", addr)
 		}
 	}
 }

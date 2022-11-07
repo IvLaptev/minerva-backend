@@ -12,6 +12,12 @@ type Action struct {
 	Connection  *websocket.Conn
 }
 
+type ResponceAction struct {
+	Title       string
+	Description string
+	Id          string
+}
+
 func GetActions(data []interface{}) ([]Action, error) {
 	var actions []Action = make([]Action, 0)
 	for i := 0; i < len(data); i++ {
