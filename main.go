@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"minerva/handlers"
+	"minerva/services"
 	"minerva/utils"
 	"net/http"
 )
@@ -16,7 +17,7 @@ func main() {
 
 	config := utils.GetConfig()
 
-	handlers.SetDefaultActions(config.Actions)
+	services.SetDefaultActions(config.Actions)
 
 	if config.Service.Master {
 		go utils.SetupSlaves(config.Service.Slaves, config.Service.Host)

@@ -27,7 +27,7 @@ func HandleMaster(w http.ResponseWriter, r *http.Request) {
 	// Отправка возможных для выполнения задач
 	actions := make([]interface{}, 0)
 	mapstructure.Decode(utils.GetConfig().Actions, &actions)
-	msg, _ := json.Marshal(types.Message{Command: "set_actions", Body: actions})
+	msg, _ := json.Marshal(types.Message{Command: "actions.set", Body: actions})
 	connection.WriteMessage(websocket.TextMessage, msg)
 
 	// Сохранение соединения между сервисами

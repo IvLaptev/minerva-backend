@@ -25,7 +25,6 @@ var upgrader = websocket.Upgrader{
 }
 
 func SetDefaultActions(new_actions []types.Action) {
-
 	for _, action := range new_actions {
 		if actions[action.Id].Id != "" {
 			log.Println("ERROR: Action with ID", action.Id, "already exists")
@@ -71,7 +70,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 
 		// Выполнение переданной команды
 		switch msg.Command {
-		case types.COMMANDS[0]: // set_actions
+		case types.COMMANDS[0]: // actions.set
 			new_actions, err := types.GetActions(msg.Body)
 			if err != nil {
 				continue
@@ -88,7 +87,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				defer delete(actions, new_actions[i].Id)
 			}
 
-		case types.COMMANDS[1]: // get_actions
+		case types.COMMANDS[1]: // actions.get
 			var resp_actions = make([]types.ResponceAction, 0)
 			for _, action := range actions {
 				resp_actions = append(resp_actions, action.ToResponseModel())

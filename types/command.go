@@ -1,7 +1,9 @@
 package types
 
 var COMMANDS = [...]string{
-	"set_actions",
-	"get_actions",
-	"run_action",
+	"actions.set",
+	"actions.get",
+	"action.start",
+	"action.stop",
+	"action.logs",
 }
