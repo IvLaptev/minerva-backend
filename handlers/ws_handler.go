@@ -97,7 +97,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				connection.WriteMessage(websocket.TextMessage, resp)
 			}
 
-		case types.COMMANDS[2]: // run_action
+		case types.COMMANDS[2]: // action.start
 			action_id := msg.Body[0].(string)
 
 			action := actions[action_id]
@@ -106,6 +106,17 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			} else {
 				log.Println("INVOKE ACTION:", action_id, action.Title)
 				utils.InvokeCommand(action)
+			}
+
+		case types.COMMANDS[3]: // action.stop
+			action_id := msg.Body[0].(string)
+
+			action := actions[action_id]
+			if action.Connection != nil {
+				action.Connection.WriteMessage(websocket.TextMessage, message)
+			} else {
+				log.Println("STOP ACTION:", action_id, action.Title)
+				utils.StopCommand(action)
 			}
 		}
 
