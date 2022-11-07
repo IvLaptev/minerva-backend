@@ -23,6 +23,17 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+func SetDefaultActions(new_actions []types.Action) {
+
+	for _, action := range new_actions {
+		if actions[action.Id].Id != "" {
+			log.Println("ERROR: Action with ID", action.Id, "already exists")
+		}
+
+		actions[action.Id] = action
+	}
+}
+
 func WsMasterController(w http.ResponseWriter, r *http.Request) {
 	// Установка соединения
 	connection, _ := upgrader.Upgrade(w, r, nil)

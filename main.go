@@ -16,6 +16,8 @@ func main() {
 
 	config := utils.GetConfig()
 
+	handlers.SetDefaultActions(config.Actions)
+
 	if config.Service.Master {
 		go utils.SetupSlaves(config.Service.Slaves, config.Service.Host)
 	}
