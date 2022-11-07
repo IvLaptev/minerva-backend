@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"minerva/types"
+	"minerva/utils"
 	"net/http"
 	"os/exec"
 
@@ -33,6 +34,8 @@ func SetDefaultActions(new_actions []types.Action) {
 
 		actions[action.Id] = action
 	}
+
+	log.Println(actions)
 }
 
 func WsMasterController(w http.ResponseWriter, r *http.Request) {
@@ -88,11 +91,7 @@ func WsSlaveHandler(connection *websocket.Conn) {
 		case types.COMMANDS[1]: // get_actions
 			var resp_actions = make([]types.ResponceAction, 0)
 			for _, action := range actions {
-				resp_actions = append(resp_actions, types.ResponceAction{
-					Id:          action.Id,
-					Title:       action.Title,
-					Description: action.Description,
-				})
+				resp_actions = append(resp_actions, action.ToResponseModel())
 
 				resp, _ := json.Marshal(resp_actions)
 
@@ -106,7 +105,8 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			if action.Connection != nil {
 				action.Connection.WriteMessage(websocket.TextMessage, message)
 			} else {
-				log.Println("INVOKE ACTION")
+				log.Println("INVOKE ACTION:", action_id, action.Title)
+				utils.InvokeCommand(action)
 			}
 		}
 

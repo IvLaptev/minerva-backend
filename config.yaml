@@ -10,6 +10,8 @@ actions:
   - id: '8080_1'
     title: 'First'
     description: 'Test back'
+    command: ["echo", "123321123321"]
   - id: '8080_2'
     title: 'Second'
     description: 'Test back'
+    command: ["sh", "long_task.sh"]

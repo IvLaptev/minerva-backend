@@ -9,6 +9,7 @@ type Action struct {
 	Title       string
 	Description string
 	Id          string
+	Command     []string
 	Connection  *websocket.Conn
 }
 
@@ -30,4 +31,12 @@ func GetActions(data []interface{}) ([]Action, error) {
 	}
 
 	return actions, nil
+}
+
+func (action Action) ToResponseModel() ResponceAction {
+	return ResponceAction{
+		Id:          action.Id,
+		Title:       action.Title,
+		Description: action.Description,
+	}
 }

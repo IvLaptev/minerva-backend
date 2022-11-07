@@ -38,9 +38,11 @@ On each of the on-board computers of the robot, you must run its own instance of
       - id: '8080_1'
         title: 'First'
         description: 'Test back'
+        command: ["echo", "Hello"]
       - id: '8080_2'
         title: 'Second'
         description: 'Test back'
+        command: ["sh", "./logt_task.sh"]
     ```
 
     Or you can configure instance as a slave:
@@ -53,9 +55,11 @@ On each of the on-board computers of the robot, you must run its own instance of
       - id: '8080_1'
         title: 'First'
         description: 'Test back'
+        command: ["echo", "Hello"]
       - id: '8080_2'
         title: 'Second'
         description: 'Test back'
+        command: ["sh", "./logt_task.sh"]
     ```
 
 5. Run service
