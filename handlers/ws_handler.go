@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"log"
 	"minerva/types"
 	"minerva/utils"
@@ -93,11 +95,8 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				resp_actions = append(resp_actions, action.ToResponseModel())
 
 			}
-			resp_msg := types.Message{Command: "actions.set", Body: nil}
-			mapstructure.Decode(resp_actions, &resp_msg.Body)
-			resp, _ := json.Marshal(resp_msg)
 
-			connection.WriteMessage(websocket.TextMessage, resp)
+			_SendMessage(connection, "actions.set", resp_actions)
 
 		case types.COMMANDS[2]: // action.start
 			action_id := msg.Body[0].(string)
@@ -107,16 +106,26 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				action.Connection.WriteMessage(websocket.TextMessage, message)
 			} else {
 				log.Println("INVOKE ACTION:", action_id, action.Title)
-				cmd := utils.InvokeCommand(action)
+				stdout := utils.InvokeCommand(action)
 
 				// Ожидание окончания выполнения команды и отправка сообщения пользователю об этом
 				go func() {
-					cmd.Wait()
+					// cmd.Wait()
+
+					// Построчная отправка логов
+					in := bufio.NewScanner(stdout)
+
+					for in.Scan() {
+						fmt.Println(in.Text())
+						fmt.Println(types.ActionLog{Id: action_id, Line: in.Text()})
+						_SendMessage(connection, "action.logs", []types.ActionLog{
+							{Id: action_id, Line: in.Text()},
+						})
+					}
+
+					// Обработка остановки выполнения команды
 					utils.StopCommand(action)
-					resp_msg := types.Message{Command: "action.stop", Body: nil}
-					mapstructure.Decode([]string{action_id}, &resp_msg.Body)
-					resp, _ := json.Marshal(resp_msg)
-					connection.WriteMessage(websocket.TextMessage, resp)
+					_SendMessage(connection, "action.stop", []string{action_id})
 				}()
 			}
 
@@ -132,4 +141,11 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			}
 		}
 	}
+}
+
+func _SendMessage(conn *websocket.Conn, command string, body interface{}) {
+	resp_msg := types.Message{Command: command, Body: nil}
+	mapstructure.Decode(body, &resp_msg.Body)
+	resp, _ := json.Marshal(resp_msg)
+	conn.WriteMessage(websocket.TextMessage, resp)
 }

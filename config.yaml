@@ -8,10 +8,10 @@ service:
 
 actions:
   - id: '8080_1'
-    title: 'First'
-    description: 'Test back'
+    title: 'Моментальное событие'
+    description: 'Выводит текст в консоль и заканчивается'
     command: ["echo", "123321123321"]
   - id: '8080_2'
-    title: 'Second'
-    description: 'Test back'
+    title: 'Не моментальное событие'
+    description: 'Длится 10 секунд, а потом прекращается'
     command: ["sh", "long_task.sh"]

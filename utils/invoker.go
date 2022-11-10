@@ -3,28 +3,29 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"minerva/types"
-	"os"
 	"os/exec"
 	"syscall"
 )
 
 var commands = make(map[string]int, 0)
 
-func InvokeCommand(action types.Action) *exec.Cmd {
+func InvokeCommand(action types.Action) io.ReadCloser {
 	if commands[action.Id] != 0 {
 		log.Println("ERROR: action " + action.Id + " is already running (PID: " + fmt.Sprint(commands[action.Id]) + ")")
 	}
 
 	cmd := exec.Command(action.Command[0], action.Command[1:]...)
-	cmd.Stdout = os.Stdout
+	// cmd.Stdout = os.Stdout
+	stdout, _ := cmd.StdoutPipe()
 	cmd.Start()
 
 	commands[action.Id] = cmd.Process.Pid
 	log.Println("ACTION STARTED: ID: " + action.Id + "; PID: " + fmt.Sprint(commands[action.Id]))
 
-	return cmd
+	return stdout
 }
 
 func StopCommand(action types.Action) error {
