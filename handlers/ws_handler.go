@@ -9,6 +9,7 @@ import (
 	"os/exec"
 
 	"github.com/gorilla/websocket"
+	"github.com/mitchellh/mapstructure"
 )
 
 // Соединения с клиентами
@@ -92,10 +93,12 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			for _, action := range actions {
 				resp_actions = append(resp_actions, action.ToResponseModel())
 
-				resp, _ := json.Marshal(resp_actions)
-
-				connection.WriteMessage(websocket.TextMessage, resp)
 			}
+			resp_msg := types.Message{Command: "actions.set", Body: nil}
+			mapstructure.Decode(resp_actions, &resp_msg.Body)
+			resp, _ := json.Marshal(resp_msg)
+
+			connection.WriteMessage(websocket.TextMessage, resp)
 
 		case types.COMMANDS[2]: // action.start
 			action_id := msg.Body[0].(string)
@@ -105,7 +108,15 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				action.Connection.WriteMessage(websocket.TextMessage, message)
 			} else {
 				log.Println("INVOKE ACTION:", action_id, action.Title)
-				utils.InvokeCommand(action)
+				cmd := utils.InvokeCommand(action)
+				go func() {
+					cmd.Wait()
+					utils.StopCommand(action)
+					resp_msg := types.Message{Command: "action.stop", Body: nil}
+					mapstructure.Decode([]string{action_id}, &resp_msg.Body)
+					resp, _ := json.Marshal(resp_msg)
+					connection.WriteMessage(websocket.TextMessage, resp)
+				}()
 			}
 
 		case types.COMMANDS[3]: // action.stop

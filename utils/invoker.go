@@ -12,10 +12,9 @@ import (
 
 var commands = make(map[string]int, 0)
 
-func InvokeCommand(action types.Action) error {
+func InvokeCommand(action types.Action) *exec.Cmd {
 	if commands[action.Id] != 0 {
 		log.Println("ERROR: action " + action.Id + " is already running (PID: " + fmt.Sprint(commands[action.Id]) + ")")
-		return errors.New("ERROR: action " + action.Id + " is already running (PID: " + fmt.Sprint(commands[action.Id]) + ")")
 	}
 
 	cmd := exec.Command(action.Command[0], action.Command[1:]...)
@@ -25,7 +24,7 @@ func InvokeCommand(action types.Action) error {
 	commands[action.Id] = cmd.Process.Pid
 	log.Println("ACTION STARTED: ID: " + action.Id + "; PID: " + fmt.Sprint(commands[action.Id]))
 
-	return nil
+	return cmd
 }
 
 func StopCommand(action types.Action) error {
