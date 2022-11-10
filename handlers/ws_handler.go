@@ -6,7 +6,6 @@ import (
 	"minerva/types"
 	"minerva/utils"
 	"net/http"
-	"os/exec"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
@@ -109,6 +108,8 @@ func WsSlaveHandler(connection *websocket.Conn) {
 			} else {
 				log.Println("INVOKE ACTION:", action_id, action.Title)
 				cmd := utils.InvokeCommand(action)
+
+				// Ожидание окончания выполнения команды и отправка сообщения пользователю об этом
 				go func() {
 					cmd.Wait()
 					utils.StopCommand(action)
@@ -130,18 +131,5 @@ func WsSlaveHandler(connection *websocket.Conn) {
 				utils.StopCommand(action)
 			}
 		}
-
-		// Отправка ответа клиенту
-		// connection.WriteMessage(websocket.TextMessage, message)
-
-		go messageHandler(message)
 	}
-}
-
-// Обработка сообщения, полученного по ws
-func messageHandler(message []byte) {
-
-	cmd := exec.Command("sh", "./long_task.sh")
-	// cmd.Stdout = os.Stdout
-	cmd.Start()
 }
